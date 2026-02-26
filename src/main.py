@@ -5,6 +5,8 @@ from query_docs import generate_response
 from check_docs import check_docs
 from citate_docs import cite_documents
 
+from gemini_client import client
+
 
 def main():
     try:
@@ -24,11 +26,14 @@ def main():
         print("\nstep 3: generate response")
         prompt = input("Enter your prompt (or press Enter to use default): ")
         prompt = prompt if prompt.strip() else TEST_PROMPT
-        response = generate_response(prompt, store)
-        print(response.text)
+        last_chunk = None
+        for chunk in generate_response(prompt, store):
+            print(chunk.text, end="", flush=True)
+            last_chunk = chunk
+        print()
         print("\nCitations:")
         citations = cite_documents(
-            response.candidates[0] if response.candidates else None
+            last_chunk.candidates[0] if last_chunk and last_chunk.candidates else None
         )
         print(citations)
     except KeyboardInterrupt:
