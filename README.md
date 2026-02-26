@@ -2,7 +2,7 @@
 
 A minimal, production-ready demonstration of **Retrieval-Augmented Generation (RAG)** built with the Google Gemini API. This project showcases how to upload documents to a Gemini File Search Store, ground model responses against that knowledge base, and extract verifiable citations from every answer.
 
-This version runs on CLI, supports dynamic document uploads and user queries, and streams responses token-by-token for a real-time experience.
+It ships with a **Streamlit web UI** as the primary interface, plus a CLI pipeline for scripted or automated use. Both support dynamic document uploads, streaming responses, and citation extraction.
 
 ---
 
@@ -27,7 +27,7 @@ This demo uses the **Gemini File Search** tool — a native capability of the `g
 
 1. Index local documents into a managed vector store.
 2. Retrieve the most relevant chunks automatically when a query is issued.
-3. Generate a grounded, citation-backed response using `gemini-3-flash-preview`.
+3. Generate a grounded, citation-backed response using `gemini-2.5-flash-lite`.
 
 ---
 
@@ -35,11 +35,15 @@ This demo uses the **Gemini File Search** tool — a native capability of the `g
 
 | Capability | Details |
 | --- | --- |
-| Document ingestion | Uploads all files in `docs/` to a Gemini File Search Store |
+| Document ingestion | Uploads files to a Gemini File Search Store; supports PDF, TXT, HTML, CSV, MD, XML |
 | Grounded generation | Responses are anchored to indexed documents via the `FileSearch` tool |
 | Streaming responses | Output is streamed token-by-token via `generate_content_stream` for real-time display |
-| Citation extraction | Retrieves source titles from `grounding_metadata` for transparency |
-| Minimal dependencies | Only `google-genai` and `python-dotenv` required |
+| Citation extraction | Source titles are extracted from `grounding_metadata` and displayed in expandable panels |
+| Streamlit UI | Multi-component web interface: sidebar with pending file queue + per-file remove, grounded chat with persistent message history, and session reset |
+| Pending file queue | Files can be staged before upload; duplicates and already-indexed files are filtered automatically |
+| Session management | Full session state lifecycle — initialize, persist across reruns, and reset with cleanup |
+| CLI pipeline | `main.py` orchestrates upload → check → generate → cite in sequence |
+| Minimal dependencies | Only `google-genai`, `python-dotenv`, and `streamlit` required |
 | Fast setup | Single `uv sync` command to install all dependencies |
 
 ---
@@ -94,6 +98,19 @@ Place any text or PDF files you want to index inside the `docs/` directory.
 
 ### 5. Run the pipeline
 
+**Streamlit UI (recommended):**
+
+```bash
+uv run streamlit run src/streamlit_ui/streamlit_app.py
+```
+
+This opens a browser with the full web interface:
+
+- **Sidebar** — stage files in a pending queue (with per-file remove), upload & index them, view the indexed document list, and reset the session.
+- **Main area** — grounded chat interface with streamed responses, persistent message history, and expandable citation panels per reply.
+
+**CLI pipeline:**
+
 ```bash
 uv run python src/main.py
 ```
@@ -104,18 +121,24 @@ uv run python src/main.py
 
 ```bash
 gemini-rag-demo/
-├── docs/                  # Knowledge base documents (gitignored by default)
+├── docs/                        # Knowledge base documents (gitignored by default)
 ├── src/
-│   ├── main.py            # Pipeline orchestrator
-│   ├── configs.py         # Shared configuration constants
-│   ├── gemini_client.py   # Gemini SDK client initialisation
-│   ├── upload_docs.py     # Document ingestion into File Search Store
-│   ├── check_docs.py      # Lists indexed documents
-│   ├── query_docs.py      # Grounded generation with FileSearch tool
-│   └── citate_docs.py     # Citation extraction from grounding metadata
-├── pyproject.toml         # Project metadata and dependencies
-├── uv.lock                # Locked dependency versions
-└── .env                   # Environment variables (not committed)
+│   ├── streamlit_ui/            # Streamlit web UI package
+│   │   ├── streamlit_app.py     # UI orchestrator (entry point)
+│   │   ├── sidebar.py           # Sidebar component (upload, doc list, cleanup)
+│   │   ├── chat.py              # Chat area component (messages, streaming, citations)
+│   │   ├── helpers.py           # Utility functions and computed config
+│   │   └── state.py             # Session state management
+│   ├── main.py                  # CLI pipeline orchestrator
+│   ├── configs.py               # Shared configuration constants
+│   ├── gemini_client.py         # Gemini SDK client initialisation
+│   ├── upload_docs.py           # Document ingestion into File Search Store
+│   ├── check_docs.py            # Lists indexed documents
+│   ├── query_docs.py            # Grounded generation with FileSearch tool
+│   └── citate_docs.py           # Citation extraction from grounding metadata
+├── pyproject.toml               # Project metadata and dependencies
+├── uv.lock                      # Locked dependency versions
+└── .env                         # Environment variables (not committed)
 ```
 
 ---
@@ -127,10 +150,10 @@ All tuneable constants are centralised in [src/configs.py](src/configs.py):
 | Variable | Default | Description |
 | --- | --- | --- |
 | `FILE_SEARCH_STORE_NAME` | `"rag-demo"` | Display name for the File Search Store |
-| `MODEL` | `"gemini-3-flash-preview"` | Gemini model used for generation |
-| `TEST_PROMPT` | `"Test prompt"` | Default prompt when none is entered |
+| `MODEL` | `"gemini-2.5-flash-lite"` | Gemini model used for generation |
+| `TEST_PROMPT` | `"En una frase, cuales son las etapas del roadmap"` | Default prompt used by the CLI pipeline |
 | `DOCS_DIR` | `"./docs/"` | Staging directory for documents before upload |
-| `SUPPORTED_FILETYPES` | PDF, TXT, HTML, CSV, MD, XML | File types shown in the native picker dialog |
+| `SUPPORTED_FILETYPES` | PDF, TXT, HTML, CSV, MD, XML | File types accepted in the upload dialog and Streamlit picker |
 
 ---
 
@@ -141,7 +164,11 @@ Planned improvements aligned with the senior AI Engineer path:
 - [X] Add streaming responses via `generate_content_stream` (CLI, token-by-token output)
 - [X] Allow dynamic user input for queries instead of hardcoded prompt
 - [X] Allow dynamic document uploads through the CLI instead of manual `docs/` folder
-- [ ] Add UI interface for document upload and query input
+- [X] Add Streamlit UI with document upload, indexed doc list, and grounded chat
+- [X] Pending file queue with per-file remove buttons and duplicate detection
+- [X] Persistent chat message history with expandable citation panels
+- [X] Session state management with full reset and staging area cleanup
+- [ ] Allow user to use API KEY from the UI instead of .env file
 
 ---
 

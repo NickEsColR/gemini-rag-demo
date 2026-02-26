@@ -1,7 +1,7 @@
 from typing import Iterator
 
 from google.genai import types
-from google.genai.types import GenerateContentResponse
+from google.genai.types import GenerateContentResponse, FileSearchStore
 
 from gemini_client import client
 from configs import MODEL
@@ -9,7 +9,9 @@ from configs import MODEL
 has_thinking_level: bool = "3" in MODEL  # Thinking levels only supported in Gemini 3+
 
 
-def generate_response(prompt: str, store) -> Iterator[GenerateContentResponse]:
+def generate_response(
+    prompt: str, store: FileSearchStore
+) -> Iterator[GenerateContentResponse]:
     """Stream a response grounded in the documents of the given file search store."""
     return client.models.generate_content_stream(
         model=MODEL,

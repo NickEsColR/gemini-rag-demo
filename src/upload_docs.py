@@ -1,5 +1,6 @@
 import os
 import time
+from collections.abc import Callable
 
 from google.genai.types import FileSearchStore
 
@@ -20,13 +21,18 @@ def create_store() -> FileSearchStore:
     return store
 
 
-def upload_docs(file_list: list[str] | None = None) -> FileSearchStore:
+def upload_docs(
+    file_list: list[str] | None = None,
+    on_progress: Callable[[str], None] | None = None,
+) -> FileSearchStore:
     """
     Create a file search store, upload documents to it, and return the store.
 
     Args:
         file_list:  Explicit list of filenames (basenames) to upload from
                     DOCS_DIR. If None, all non-hidden files in DOCS_DIR are used.
+        on_progress: Optional callback called with each filename after it finishes
+                    uploading. Defaults to printing the filename.
     """
     store = create_store()
 
@@ -44,6 +50,9 @@ def upload_docs(file_list: list[str] | None = None) -> FileSearchStore:
             time.sleep(2)
             operation = client.operations.get(operation)
 
-        print(f"Finished uploading: {filename}")
+        if on_progress:
+            on_progress(filename)
+        else:
+            print(f"Finished uploading: {filename}")
 
     return store

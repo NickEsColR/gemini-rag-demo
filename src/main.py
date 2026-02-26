@@ -21,7 +21,8 @@ def main():
         store = upload_docs(copied if copied else None)
 
         print("\nstep 2: check docs")
-        check_docs(store)
+        for name in check_docs(store):
+            print(name)
 
         print("\nstep 3: generate response")
         prompt = input("Enter your prompt (or press Enter to use default): ")
