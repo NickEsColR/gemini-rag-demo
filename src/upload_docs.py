@@ -1,37 +1,49 @@
-import mimetypes
 import os
 import time
 
-from configs import FILE_SEARCH_STORE_NAME
+from google.genai.types import FileSearchStore
+
+from configs import DOCS_DIR, FILE_SEARCH_STORE_NAME
 from gemini_client import client
 
-
-files = os.listdir("docs")
-files = [file for file in files if not file.startswith(".")]
-DOCS_PATH = "./docs/"
-
-file_search_store = client.file_search_stores.create(
-    config={
-        "display_name": FILE_SEARCH_STORE_NAME,
-    }
-)
-print(f"Created file search store with name: {file_search_store.name}")
+if not os.path.exists(DOCS_DIR):
+    os.makedirs(DOCS_DIR, exist_ok=True)
+    print(f"Created docs directory: {DOCS_DIR}")
 
 
-def upload_docs():
-    for file in files:
+def create_store() -> FileSearchStore:
+    """Create a new Gemini file search store and return it."""
+    store = client.file_search_stores.create(
+        config={"display_name": FILE_SEARCH_STORE_NAME}
+    )
+    print(f"Created file search store: {store.name}")
+    return store
+
+
+def upload_docs(file_list: list[str] | None = None) -> FileSearchStore:
+    """
+    Create a file search store, upload documents to it, and return the store.
+
+    Args:
+        file_list:  Explicit list of filenames (basenames) to upload from
+                    DOCS_DIR. If None, all non-hidden files in DOCS_DIR are used.
+    """
+    store = create_store()
+
+    if file_list is None:
+        file_list = [f for f in os.listdir(DOCS_DIR) if not f.startswith(".")]
+
+    for filename in file_list:
         operation = client.file_search_stores.upload_to_file_search_store(
-            file=os.path.join(DOCS_PATH, file),
-            file_search_store_name=file_search_store.name
-            if file_search_store.name
-            else "no_name_found",
-            config={
-                "display_name": file,
-            },
+            file=os.path.join(DOCS_DIR, filename),
+            file_search_store_name=store.name if store.name else "no_name_found",
+            config={"display_name": filename},
         )
 
         while not operation.done:
             time.sleep(2)
             operation = client.operations.get(operation)
 
-        print(f"Finished uploading file: {file}")
+        print(f"Finished uploading: {filename}")
+
+    return store

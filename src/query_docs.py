@@ -3,10 +3,10 @@ from google.genai.types import GenerateContentResponse
 
 from gemini_client import client
 from configs import MODEL
-from upload_docs import file_search_store
 
 
-def generate_response(prompt) -> GenerateContentResponse:
+def generate_response(prompt: str, store) -> GenerateContentResponse:
+    """Generate a response grounded in the documents of the given file search store."""
     response = client.models.generate_content(
         model=MODEL,
         contents=prompt,
@@ -14,9 +14,7 @@ def generate_response(prompt) -> GenerateContentResponse:
             tools=[
                 types.Tool(
                     file_search=types.FileSearch(
-                        file_search_store_names=[file_search_store.name]
-                        if file_search_store.name
-                        else []
+                        file_search_store_names=[store.name] if store.name else []
                     )
                 )
             ],

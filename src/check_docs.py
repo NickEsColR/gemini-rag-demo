@@ -1,9 +1,9 @@
 from gemini_client import client
-from upload_docs import file_search_store
 
 
-def check_docs():
+def check_docs(store) -> None:
+    """Print the display names of all documents in the given file search store."""
     for document in client.file_search_stores.documents.list(
-        parent=file_search_store.name if file_search_store.name else "no_name_found"
+        parent=store.name if store.name else "no_name_found"
     ):
         print(document.display_name)

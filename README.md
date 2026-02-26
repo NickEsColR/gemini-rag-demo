@@ -127,7 +127,9 @@ All tuneable constants are centralised in [src/configs.py](src/configs.py):
 | --- | --- | --- |
 | `FILE_SEARCH_STORE_NAME` | `"rag-demo"` | Display name for the File Search Store |
 | `MODEL` | `"gemini-3-flash-preview"` | Gemini model used for generation |
-| `TEST_PROMPT` | `"Prompt to test the demo"` | Default prompt for smoke-testing |
+| `TEST_PROMPT` | `"Test prompt"` | Default prompt when none is entered |
+| `DOCS_DIR` | `"./docs/"` | Staging directory for documents before upload |
+| `SUPPORTED_FILETYPES` | PDF, TXT, HTML, CSV, MD, XML | File types shown in the native picker dialog |
 
 ---
 
@@ -137,7 +139,7 @@ Planned improvements aligned with the senior AI Engineer path:
 
 - [ ] Add streaming responses via Server-Sent Events (SSE)
 - [X] Allow dynamic user input for queries instead of hardcoded prompt
-- [ ] Allow dynamic document uploads through the CLI instead of manual `docs/` folder
+- [X] Allow dynamic document uploads through the CLI instead of manual `docs/` folder
 - [ ] Add UI interface for document upload and query input
 
 ---
