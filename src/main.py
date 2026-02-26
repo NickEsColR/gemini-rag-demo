@@ -11,7 +11,9 @@ def main():
     print("step 2: check docs")
     check_docs()
     print("step 3: generate response")
-    response = generate_response(TEST_PROMPT)
+    prompt = input("Enter your prompt (or press Enter to use default): ")
+    prompt = prompt if prompt.strip() else TEST_PROMPT
+    response = generate_response(prompt)
     print(response.text)
     print("\nCitations:")
     citations = cite_documents(response.candidates[0] if response.candidates else None)

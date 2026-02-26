@@ -136,7 +136,7 @@ All tuneable constants are centralised in [src/configs.py](src/configs.py):
 Planned improvements aligned with the senior AI Engineer path:
 
 - [ ] Add streaming responses via Server-Sent Events (SSE)
-- [ ] Allow dynamic user input for queries instead of hardcoded prompt
+- [X] Allow dynamic user input for queries instead of hardcoded prompt
 - [ ] Allow dynamic document uploads through the CLI instead of manual `docs/` folder
 - [ ] Add UI interface for document upload and query input
 

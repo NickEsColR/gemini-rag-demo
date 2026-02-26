@@ -19,7 +19,8 @@ def generate_response(prompt) -> GenerateContentResponse:
                         else []
                     )
                 )
-            ]
+            ],
+            system_instruction="Based your responses on the provided documents. If the answer is not in the documents, say it's not in the knowledge base.",
         ),
     )
 

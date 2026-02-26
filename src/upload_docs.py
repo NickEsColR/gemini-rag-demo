@@ -1,3 +1,4 @@
+import mimetypes
 import os
 import time
 
@@ -6,6 +7,7 @@ from gemini_client import client
 
 
 files = os.listdir("docs")
+files = [file for file in files if not file.startswith(".")]
 DOCS_PATH = "./docs/"
 
 file_search_store = client.file_search_stores.create(
