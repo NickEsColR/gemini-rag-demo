@@ -2,7 +2,7 @@
 
 A minimal, production-ready demonstration of **Retrieval-Augmented Generation (RAG)** built with the Google Gemini API. This project showcases how to upload documents to a Gemini File Search Store, ground model responses against that knowledge base, and extract verifiable citations from every answer.
 
-This version runs on CLI, requires to manually upload documents to the `docs/` folder, and uses a hardcoded prompt for testing.
+This version runs on CLI, supports dynamic document uploads and user queries, and streams responses token-by-token for a real-time experience.
 
 ---
 
@@ -37,6 +37,7 @@ This demo uses the **Gemini File Search** tool — a native capability of the `g
 | --- | --- |
 | Document ingestion | Uploads all files in `docs/` to a Gemini File Search Store |
 | Grounded generation | Responses are anchored to indexed documents via the `FileSearch` tool |
+| Streaming responses | Output is streamed token-by-token via `generate_content_stream` for real-time display |
 | Citation extraction | Retrieves source titles from `grounding_metadata` for transparency |
 | Minimal dependencies | Only `google-genai` and `python-dotenv` required |
 | Fast setup | Single `uv sync` command to install all dependencies |
@@ -47,8 +48,8 @@ The pipeline is fully orchestrated in `main.py` through four sequential steps:
 
 1. **Upload** — documents are uploaded and indexed.
 2. **Check** — indexed document names are listed to confirm ingestion.
-3. **Generate** — a grounded response is produced for the configured prompt.
-4. **Cite** — source titles are extracted and displayed.
+3. **Generate** — a grounded response is streamed token-by-token for the user's prompt.
+4. **Cite** — source titles are extracted from the final chunk's grounding metadata and displayed.
 
 ---
 
@@ -137,7 +138,7 @@ All tuneable constants are centralised in [src/configs.py](src/configs.py):
 
 Planned improvements aligned with the senior AI Engineer path:
 
-- [X] Add streaming responses via Server-Sent Events (SSE)
+- [X] Add streaming responses via `generate_content_stream` (CLI, token-by-token output)
 - [X] Allow dynamic user input for queries instead of hardcoded prompt
 - [X] Allow dynamic document uploads through the CLI instead of manual `docs/` folder
 - [ ] Add UI interface for document upload and query input
