@@ -47,7 +47,7 @@ This demo uses the **Gemini File Search** tool — a native capability of the `g
 | Error handling | Streaming errors and indexing failures are caught and surfaced in the UI without crashing the session |
 | CLI pipeline | `main.py` orchestrates upload → check → generate → cite in sequence |
 | Minimal dependencies | Only `google-genai`, `python-dotenv`, and `streamlit` required |
-| Fast setup | Single `uv sync` command to install all dependencies |
+| Fast setup | Single `uv sync` command (or `pip install -r requirements.txt`) to install all dependencies |
 
 ---
 
@@ -65,7 +65,7 @@ The pipeline is fully orchestrated in `main.py` through four sequential steps:
 | Requirement | Version |
 | --- | --- |
 | Python | >= 3.10 |
-| [uv](https://docs.astral.sh/uv/) | latest |
+| [uv](https://docs.astral.sh/uv/) (recommended) or pip | latest |
 | Google Gemini API key | — |
 
 ---
@@ -81,8 +81,16 @@ cd gemini-rag-demo
 
 ### 2. Install dependencies
 
+**With uv (recommended):**
+
 ```bash
 uv sync
+```
+
+**With pip (if uv is not available):**
+
+```bash
+pip install -r requirements.txt
 ```
 
 ### 3. Configure environment variables (optional for the UI)
@@ -106,7 +114,11 @@ Place any text or PDF files you want to index inside the `docs/` directory.
 **Streamlit UI (recommended):**
 
 ```bash
+# with uv
 uv run streamlit run src/streamlit_ui/streamlit_app.py
+
+# with pip / vanilla Python
+streamlit run src/streamlit_ui/streamlit_app.py
 ```
 
 This opens a browser with the full web interface:
@@ -117,7 +129,11 @@ This opens a browser with the full web interface:
 **CLI pipeline:**
 
 ```bash
+# with uv
 uv run python src/main.py
+
+# with pip / vanilla Python
+python src/main.py
 ```
 
 ---
@@ -143,6 +159,7 @@ gemini-rag-demo/
 │   └── citate_docs.py           # Citation extraction from grounding metadata
 ├── pyproject.toml               # Project metadata and dependencies
 ├── uv.lock                      # Locked dependency versions
+├── requirements.txt             # pip-compatible dependency list (exported from uv)
 └── .env                         # Environment variables (not committed)
 ```
 
