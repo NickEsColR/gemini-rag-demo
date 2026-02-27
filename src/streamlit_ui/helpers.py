@@ -37,9 +37,14 @@ def streaming_wrapper(
     """
     Wrap generate_response so st.write_stream receives plain strings
     while we capture the final raw chunk for citation extraction.
+
+    Uses the per-session Gemini client stored in st.session_state so that
+    the Streamlit app uses the user-provided API key rather than the
+    module-level singleton.
     """
     last = None
-    for chunk in generate_response(prompt, store):
+    session_client = st.session_state.get("gemini_client")
+    for chunk in generate_response(prompt, store, client=session_client):
         last = chunk
         if chunk.text:
             yield chunk.text

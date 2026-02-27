@@ -36,9 +36,17 @@ def _handle_query_input() -> None:
         st.markdown(user_prompt)
 
     with st.chat_message("assistant"):
-        response_text = st.write_stream(
-            streaming_wrapper(user_prompt, st.session_state.store)
-        )
+        try:
+            response_text = st.write_stream(
+                streaming_wrapper(user_prompt, st.session_state.store)
+            )
+        except Exception as e:
+            error_msg = f"An error occurred while generating a response: {e}"
+            st.error(error_msg)
+            st.session_state.messages.append(
+                {"role": "assistant", "content": error_msg, "citations": ""}
+            )
+            return
 
     last_chunk = st.session_state.pop("_last_chunk", None)
     candidate = (
@@ -62,6 +70,13 @@ def _handle_query_input() -> None:
 def render_chat() -> None:
     """Render the main chat area: header, message history, suggestions, and query input."""
     _render_header()
+
+    if not st.session_state.get("gemini_client"):
+        st.info(
+            ":material/key: Enter a valid API key in the sidebar to get started.",
+            icon=None,
+        )
+        return
 
     if not st.session_state.store:
         st.info(
