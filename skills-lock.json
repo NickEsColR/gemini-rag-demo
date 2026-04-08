@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "skills": {
+    "developing-with-streamlit": {
+      "source": "streamlit/agent-skills",
+      "sourceType": "github",
+      "computedHash": "1063314b085dc1326413615298499414c83bd9545e349cf5280a619651cd3881"
+    },
+    "gemini-api-dev": {
+      "source": "google-gemini/gemini-skills",
+      "sourceType": "github",
+      "computedHash": "9bc5e171e7192ae36bb81950735ed729231870efa7750a30719f91c7ad31495a"
+    }
+  }
+}
